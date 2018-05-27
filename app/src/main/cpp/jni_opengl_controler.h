@@ -10,10 +10,10 @@
 extern "C" {
 #endif
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_init
-(JNIEnv *, jobject, jobject ,jobject);
+(JNIEnv *, jobject, jobject);
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_resetSize
-(JNIEnv *, jobject, jint,jint);
+(JNIEnv *, jobject, jint,jint,jobject);
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_stop
 (JNIEnv *, jobject);

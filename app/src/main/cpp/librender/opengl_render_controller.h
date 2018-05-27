@@ -14,13 +14,13 @@
 class OpenGlRenderController {
 
 public:
-    OpenGlRenderController(JNIEnv *env, jobject assetManager,
-                             ANativeWindow *window);
+    OpenGlRenderController(JNIEnv *env, jobject assetManager
+                             );
     virtual ~OpenGlRenderController();
     bool start();
     void stop();
     void setWindow(ANativeWindow* window);
-    void resetSize(int width, int height);
+    void resetSize(jint width, jint height, ANativeWindow *pWindow);
 
 private:
     BaseRender* render;

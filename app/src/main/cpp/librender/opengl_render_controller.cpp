@@ -136,25 +136,25 @@ void OpenGlRenderController::setWindow(ANativeWindow *window) {
     pthread_mutex_unlock(&mLock);
 }
 
-void OpenGlRenderController::resetSize(int width, int height) {
+void OpenGlRenderController::resetSize(jint width, jint height, ANativeWindow *pWindow) {
     LOGI("VideoDutePlayerController::resetSize width:%d; height:%d", width, height);
     pthread_mutex_lock(&mLock);
     this->screenWidth = width;
     this->screenHeight = height;
+    _window=pWindow;
+    _msg=MSG_WINDOW_SET;
     render->resetRenderSize(0, 0, width, height);
     pthread_cond_signal(&mCondition);
     pthread_mutex_unlock(&mLock);
 }
 
-OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager,
-                                               ANativeWindow *window) {
+OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
+                                               ) {
     LOGI("VideoDutePlayerController instance created");
     pthread_mutex_init(&mLock, nullptr);
     pthread_cond_init(&mCondition, nullptr);
     screenWidth = 720;
     screenHeight = 720;
-    _msg = MSG_WINDOW_SET;
-    _window = window;
     JavaVM *g_jvm = NULL;
     env->GetJavaVM(&g_jvm);
     render = new ShapeRener("vertex_shader.glsl", "fragment_shader.glsl",
