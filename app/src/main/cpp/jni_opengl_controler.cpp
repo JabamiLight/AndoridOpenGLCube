@@ -8,22 +8,26 @@ OpenGlRenderController *openGlRenderController;
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_init
         (JNIEnv *env, jobject thiz, jobject assetManager, jobject surface) {
-    openGlRenderController = new OpenGlRenderController(env, assetManager,
-                                                        ANativeWindow_fromSurface(env, surface));
-    openGlRenderController->start();
+    if (!openGlRenderController) {
+        openGlRenderController = new OpenGlRenderController(env, assetManager,
+                                                            ANativeWindow_fromSurface(env, surface));
+        openGlRenderController->start();
+    } else{
+        openGlRenderController->setWindow(ANativeWindow_fromSurface(env, surface));
+
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_resetSize
         (JNIEnv *, jobject, jint width, jint height) {
-    if(openGlRenderController){
-        openGlRenderController->resetSize(width,height);
+    if (openGlRenderController) {
+        openGlRenderController->resetSize(width, height);
     }
 }
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_stop
         (JNIEnv *, jobject) {
-    if(openGlRenderController){
+    if (openGlRenderController) {
         openGlRenderController->stop();
     }
-
 }

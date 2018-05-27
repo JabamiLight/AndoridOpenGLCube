@@ -37,6 +37,8 @@ public:
     EGLDisplay getDisplay();
     EGLConfig getConfig();
 
+    void destorySurface(EGLSurface surface);
+
 private:
     EGLDisplay display;
     EGLConfig config;

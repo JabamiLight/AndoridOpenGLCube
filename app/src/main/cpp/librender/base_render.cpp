@@ -134,15 +134,9 @@ void BaseRender::dealloc() {
 
 void BaseRender::resetRenderSize(int left, int top, int width, int height) {
     this->_backingLeft = left;
-
     this->_backingTop = top;
-
     this->_backingWidth = width;
-
     this->_backingHeight = height;
-
-
-
 }
 
 int BaseRender::bindLocation() {

@@ -18,7 +18,7 @@ ShapeRener::~ShapeRener() {
 void ShapeRener::render() {
     glViewport(_backingLeft, _backingTop, _backingWidth, _backingHeight);
     //设置一个颜色状态
-    glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     //使能颜色状态的值来清屏
     glClear(GL_COLOR_BUFFER_BIT);
     glEnable(GL_BLEND);
@@ -39,6 +39,11 @@ void ShapeRener::initRenderObj() {
             0.5f, -0.0f, 0.0f, // right
             0.0f, 1.0f, 0.0f  // top
     };
+    if(VAO&&VBO){
+        glDeleteVertexArrays(2, VAO);
+        glDeleteBuffers(2, VBO);
+        glDeleteBuffers(1, &EBO);
+    }
     VAO = new GLuint[2];
     VBO = new GLuint[2];
     //生成两个VAO和两个VBO
@@ -79,7 +84,10 @@ void ShapeRener::initRenderObj() {
     //指定解析顶点规则
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
     glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 
 }
 

@@ -39,7 +39,7 @@ void OpenGlRenderController::renderLoop() {
             eglCore->makeCurrent(previewSurface);
             this->drawFrame();
             pthread_cond_wait(&mCondition, &mLock);
-            usleep(100 * 1000);
+            usleep(16 * 1000);
         }
 
         pthread_mutex_unlock(&mLock);
@@ -50,19 +50,29 @@ void OpenGlRenderController::renderLoop() {
 }
 
 bool OpenGlRenderController::initializeEnv() {
-    eglCore = new EGLCore();
-    eglCore->init();
+    if (!eglCore) {
+        eglCore = new EGLCore();
+        eglCore->init();
+    }
+    if (previewSurface != EGL_NO_SURFACE) {
+        eglCore->destorySurface(previewSurface);
+        previewSurface = EGL_NO_SURFACE;
+    }
     previewSurface = eglCore->createWindowSurface(_window);
     eglCore->makeCurrent(previewSurface);
-    bool isRendererInitialized = render->init(screenWidth, screenHeight);
+    if (!isRendererInitialized) {
+        isRendererInitialized = render->init(screenWidth, screenHeight);
+    }
     if (!isRendererInitialized) {
         LOGI("Renderer failed on initialized...");
         return false;
     }
-    if(!eglInit){
+    LOGI("eglinit %d", eglInit);
+    if (!eglInit || _msg == MSG_WINDOW_SET) {
         initializeRenderObj();
     }
-    eglInit=true;
+
+    eglInit = true;
     LOGI("Initializing context Success");
     return true;
 }
@@ -115,9 +125,6 @@ void OpenGlRenderController::stop() {
     pthread_mutex_unlock(&mLock);
     LOGI("we will join render thread stop");
     pthread_join(_threadId, nullptr);
-    render->dealloc();
-    delete render;
-    render= nullptr;
     LOGI("VideoDutePlayerController Render thread stopped");
 }
 
@@ -140,7 +147,7 @@ void OpenGlRenderController::resetSize(int width, int height) {
 }
 
 OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager,
-                                           ANativeWindow *window) {
+                                               ANativeWindow *window) {
     LOGI("VideoDutePlayerController instance created");
     pthread_mutex_init(&mLock, nullptr);
     pthread_cond_init(&mCondition, nullptr);
@@ -151,7 +158,7 @@ OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
     JavaVM *g_jvm = NULL;
     env->GetJavaVM(&g_jvm);
     render = new ShapeRener("vertex_shader.glsl", "fragment_shader.glsl",
-                                  env->NewGlobalRef(assetManager), g_jvm);
+                            env->NewGlobalRef(assetManager), g_jvm);
 }
 
 void OpenGlRenderController::initializeRenderObj() {

@@ -27,7 +27,8 @@ private:
 
     int screenWidth;
     int screenHeight;
-    bool eglInit;
+    bool eglInit= false;
+    bool isRendererInitialized=false;
     enum RenderThreadMessage{
         MSG_NONE=0,MSG_WINDOW_SET,MSG_RENDER_LOOP_EXIT,MSG_RENDER_CHANGE
     };

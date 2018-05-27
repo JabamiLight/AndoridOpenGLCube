@@ -16,22 +16,29 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        controler = NativeOpenglControler()
         val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         val info = am.deviceConfigurationInfo
-        Log.d("tedu", "teud" + info)
+        controler=NativeOpenglControler()
         surface.holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+                Log.d("tedu","surfaceChanged ${width}, ${height}");
                 controler?.resetSize(width, height)
             }
 
             override fun surfaceDestroyed(holder: SurfaceHolder?) {
+                Log.d("tedu","surfacedestory")
+//                controler?.stop()
+
             }
 
             override fun surfaceCreated(holder: SurfaceHolder?) {
+                Log.d("tedu","oncreate "+holder?.surface?.hashCode())
+                Log.v("tedu","oncreate "+holder?.hashCode())
                 controler?.init(assets, holder?.surface)
             }
         })
+
+
 
     }
 

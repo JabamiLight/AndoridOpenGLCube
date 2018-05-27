@@ -154,3 +154,8 @@ EGLDisplay EGLCore::getDisplay() {
 EGLConfig EGLCore::getConfig() {
     return config;
 }
+
+void EGLCore::destorySurface(EGLSurface surface) {
+    eglDestroySurface(display,surface);
+
+}
