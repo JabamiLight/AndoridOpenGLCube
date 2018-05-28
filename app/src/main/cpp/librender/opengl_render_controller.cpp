@@ -3,6 +3,7 @@
 //
 
 #include "opengl_render_controller.h"
+#include "cube_texture_render.h"
 
 #define LOG_TAG "PicPreviewController"
 
@@ -99,8 +100,6 @@ void OpenGlRenderController::destroy() {
         eglCore->release();
         eglCore = NULL;
     }
-    return;
-
 }
 
 
@@ -157,10 +156,22 @@ OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
     screenHeight = 720;
     JavaVM *g_jvm = NULL;
     env->GetJavaVM(&g_jvm);
-    render = new ShapeRener("vertex_shader.glsl", "fragment_shader.glsl",
+    render = new ShapeRener("shape/vertex_shader.glsl", "shape/fragment_shader.glsl",
                             env->NewGlobalRef(assetManager), g_jvm);
 }
 
 void OpenGlRenderController::initializeRenderObj() {
     render->initRenderObj();
+}
+
+OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager, jobject saber) {
+    LOGI("VideoDutePlayerController instance saber");
+    pthread_mutex_init(&mLock, nullptr);
+    pthread_cond_init(&mCondition, nullptr);
+    screenWidth = 720;
+    screenHeight = 720;
+    JavaVM *g_jvm = NULL;
+    env->GetJavaVM(&g_jvm);
+    render = new CubeTextureRender("texture/vertex_shader.glsl", "texture/fragment_shader.glsl",
+                            env->NewGlobalRef(assetManager), g_jvm,env->NewGlobalRef(saber));
 }

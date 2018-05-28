@@ -5,6 +5,7 @@
 #include <android/native_window_jni.h>
 
 OpenGlRenderController *openGlRenderController;
+OpenGlRenderController *openGlCubeRenderController;
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_init
         (JNIEnv *env, jobject thiz, jobject assetManager) {
@@ -13,11 +14,21 @@ JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_init
         openGlRenderController->start();
     }
 }
+JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_initCube
+        (JNIEnv *env, jobject thiz, jobject assetManager,jobject saber) {
+    if (!openGlCubeRenderController) {
+        openGlCubeRenderController = new OpenGlRenderController(env, assetManager,saber);
+        openGlCubeRenderController->start();
+    }
+}
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_resetSize
         (JNIEnv *env, jobject, jint width, jint height, jobject surface) {
     if (openGlRenderController) {
         openGlRenderController->resetSize(width, height, ANativeWindow_fromSurface(env, surface));
+    }
+    if (openGlCubeRenderController) {
+        openGlCubeRenderController->resetSize(width, height, ANativeWindow_fromSurface(env, surface));
     }
 }
 
@@ -25,5 +36,12 @@ JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_stop
         (JNIEnv *, jobject) {
     if (openGlRenderController) {
         openGlRenderController->stop();
+        delete openGlRenderController;
+        openGlRenderController= nullptr;
+    }
+    if (openGlCubeRenderController) {
+        openGlCubeRenderController->stop();
+        delete openGlCubeRenderController;
+        openGlCubeRenderController= nullptr;
     }
 }

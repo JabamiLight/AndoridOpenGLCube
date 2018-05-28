@@ -39,13 +39,14 @@ void ShapeRener::initRenderObj() {
             0.5f, -0.0f, 0.0f, // right
             0.0f, 1.0f, 0.0f  // top
     };
-    if(VAO&&VBO){
+    if (VAO && VBO) {
         glDeleteVertexArrays(2, VAO);
         glDeleteBuffers(2, VBO);
         glDeleteBuffers(1, &EBO);
+    } else {
+        VAO = new GLuint[2];
+        VBO = new GLuint[2];
     }
-    VAO = new GLuint[2];
-    VBO = new GLuint[2];
     //生成两个VAO和两个VBO
     glGenVertexArrays(2, VAO);
     glGenBuffers(2, VBO);
@@ -87,7 +88,6 @@ void ShapeRener::initRenderObj() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 
 }
 

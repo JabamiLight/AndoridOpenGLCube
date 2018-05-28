@@ -11,4 +11,5 @@ target_link_libraries(  render_core
                        EGL
                        z
                        log
+                       jnigraphics
                        android)
