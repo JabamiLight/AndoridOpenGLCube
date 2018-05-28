@@ -26,7 +26,7 @@ protected:
     GLuint  uniformSampler;
     GLuint program;
     AssetReader* assetReader;
-    GLuint *VBO,*VAO;
+    GLuint *VBO= nullptr,*VAO= nullptr;
 
     int useProgram();
     int initShader();

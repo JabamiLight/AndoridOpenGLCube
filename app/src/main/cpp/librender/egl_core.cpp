@@ -36,6 +36,7 @@ bool EGLCore::init(EGLContext sharedContext) {
             EGL_RED_SIZE, 8,
             EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, //指定渲染api版本 2
             EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+            EGL_DEPTH_SIZE, 24, //请求深度缓冲区
             EGL_NONE
     };
 

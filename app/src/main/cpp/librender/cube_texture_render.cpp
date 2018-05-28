@@ -78,17 +78,32 @@ void CubeTextureRender::initRenderObj() {
     glBindVertexArray(0);
     glUseProgram(program);
     textureLocation = glGetUniformLocation(program, "texture1");
+    viewMatLocation = glGetUniformLocation(program, "view");
+    modelMatLocation = glGetUniformLocation(program, "model");
+    projectionMatLocation = glGetUniformLocation(program, "projection");
 
 }
 
 void CubeTextureRender::render() {
     glViewport(0, 0, _backingWidth, _backingHeight);
+//    glEnable(GL_DEPTH_TEST);
+//    glDepthFunc(GL_LEQUAL);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(program);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(textureLocation,0);
+    glm::mat4 model=glm::mat4(1.0f);
+    glm::mat4 view=glm::mat4(1.0f);
+    glm::mat4 projection=glm::mat4(1.0f);
+    view=glm::rotate(view,glm::radians(-55.0f),glm::vec3(0.0, 0.0, 1.0));
+    model=glm::translate(view,glm::vec3(0.0f,0.0f,-3.0f));
+//    projection = glm::perspective(glm::radians(45.0f), (float)_backingWidth / (float)_backingHeight, 0.1f, 100.0f);
+    projection = glm::ortho(-1.0f, 1.0f, -2.0f, 2.0f, 0.1f, 10.0f);
+    glUniformMatrix4fv(modelMatLocation,1,GL_FALSE,&(model[0][0]));
+    glUniformMatrix4fv(viewMatLocation,1,GL_FALSE,&view[0][0]);
+    glUniformMatrix4fv(projectionMatLocation,1,GL_FALSE,&projection[0][0]);
     glBindVertexArray(VAO[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
