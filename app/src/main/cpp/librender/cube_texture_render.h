@@ -40,6 +40,7 @@ public:
 
     void initTexture();
 
+    void initMatrix();
 };
 
 
