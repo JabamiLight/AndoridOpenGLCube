@@ -39,8 +39,10 @@ void OpenGlRenderController::renderLoop() {
         if (eglCore) {
             eglCore->makeCurrent(previewSurface);
             this->drawFrame();
-            pthread_cond_wait(&mCondition, &mLock);
-            usleep(16 * 1000);
+            if(!render->isRenderContinus){
+                pthread_cond_wait(&mCondition, &mLock);
+                usleep(16 * 1000);
+            }
         }
 
         pthread_mutex_unlock(&mLock);

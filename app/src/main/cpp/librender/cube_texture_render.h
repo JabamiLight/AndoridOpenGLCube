@@ -24,6 +24,7 @@ private:
     GLuint texture;
     GLint textureLocation, modelMatLocation, viewMatLocation, projectionMatLocation;
 
+    long currentTime;
 
 public:
     CubeTextureRender(const char *vertex1, const char *frag1,
@@ -38,6 +39,7 @@ public:
     void dealloc() override;
 
     void initTexture();
+
 };
 
 

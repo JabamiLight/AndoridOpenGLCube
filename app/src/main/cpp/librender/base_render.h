@@ -27,7 +27,6 @@ protected:
     GLuint program;
     AssetReader* assetReader;
     GLuint *VBO= nullptr,*VAO= nullptr;
-
     int useProgram();
     int initShader();
     int bindLocation();
@@ -45,6 +44,8 @@ public:
     virtual void resetRenderSize(int left, int top, int width, int height);
 
     virtual void initRenderObj()=0;
+    bool isRenderContinus= false;
+
 };
 
 

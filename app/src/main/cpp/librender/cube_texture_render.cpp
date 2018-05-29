@@ -4,12 +4,13 @@
 
 #include <android/bitmap.h>
 #include "cube_texture_render.h"
-
+#include <time.h>
 CubeTextureRender::CubeTextureRender(const char *vertex1, const char *frag1,
                                      jobject assetManager, JavaVM *g_jvm1, jobject saber)
         : BaseRender(vertex1, frag1, assetManager, g_jvm1) {
     this->saber = saber;
     this->g_jvm = g_jvm1;
+    isRenderContinus=true;
 }
 
 void CubeTextureRender::initRenderObj() {
@@ -57,13 +58,13 @@ void CubeTextureRender::initRenderObj() {
             -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
             -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
     };
-    if(VAO&&VBO){
-        glDeleteVertexArrays(1,VAO);
-        glDeleteBuffers(1,VBO);
+    if (VAO && VBO) {
+        glDeleteVertexArrays(1, VAO);
+        glDeleteBuffers(1, VBO);
     }
-    VAO=new GLuint;
-    VBO=new GLuint;
-    glGenVertexArrays(1,VAO);
+    VAO = new GLuint;
+    VBO = new GLuint;
+    glGenVertexArrays(1, VAO);
     glGenBuffers(1, VBO);
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
@@ -81,29 +82,36 @@ void CubeTextureRender::initRenderObj() {
     viewMatLocation = glGetUniformLocation(program, "view");
     modelMatLocation = glGetUniformLocation(program, "model");
     projectionMatLocation = glGetUniformLocation(program, "projection");
-
+    currentTime=getCurrentTime();
 }
 
 void CubeTextureRender::render() {
     glViewport(0, 0, _backingWidth, _backingHeight);
-//    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 //    glDepthFunc(GL_LEQUAL);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(program);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform1i(textureLocation,0);
-    glm::mat4 model=glm::mat4(1.0f);
-    glm::mat4 view=glm::mat4(1.0f);
-    glm::mat4 projection=glm::mat4(1.0f);
-    view=glm::rotate(view,glm::radians(-55.0f),glm::vec3(0.0, 0.0, 1.0));
-    model=glm::translate(view,glm::vec3(0.0f,0.0f,-3.0f));
-//    projection = glm::perspective(glm::radians(45.0f), (float)_backingWidth / (float)_backingHeight, 0.1f, 100.0f);
-    projection = glm::ortho(-1.0f, 1.0f, -2.0f, 2.0f, 0.1f, 10.0f);
-    glUniformMatrix4fv(modelMatLocation,1,GL_FALSE,&(model[0][0]));
-    glUniformMatrix4fv(viewMatLocation,1,GL_FALSE,&view[0][0]);
-    glUniformMatrix4fv(projectionMatLocation,1,GL_FALSE,&projection[0][0]);
+    glUniform1i(textureLocation, 0);
+    glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
+    glm::mat4 projection = glm::mat4(1.0f);
+
+    long cur=getCurrentTime();
+    float timeLost=(cur-currentTime)/200.0f;
+    //opengl右手 矩阵左手
+    LOGE("毫秒变化%f",timeLost);
+
+    model = glm::rotate(model,timeLost, glm::vec3(0.5f, 1.0f, 0.0f));
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
+    float ratio = (float) _backingWidth / (float) _backingHeight;
+//    projection = glm::ortho(-1.0f, 1.0f, -ratio, ratio,0.1f, 10.0f);
+    projection = glm::perspective(glm::radians(45.0f), ratio, 0.1f, 100.0f);
+    glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, &(model[0][0]));
+    glUniformMatrix4fv(viewMatLocation, 1, GL_FALSE, &view[0][0]);
+    glUniformMatrix4fv(projectionMatLocation, 1, GL_FALSE, &projection[0][0]);
     glBindVertexArray(VAO[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -120,7 +128,7 @@ void CubeTextureRender::dealloc() {
             g_jvm->AttachCurrentThread(&env, NULL);//将当前线程注册到虚拟机中．
             isAttached = true;
         }
-        AndroidBitmap_unlockPixels(env,saber);
+        AndroidBitmap_unlockPixels(env, saber);
         env->DeleteGlobalRef(saber);
         if (isAttached)
             g_jvm->DetachCurrentThread();
@@ -130,6 +138,7 @@ void CubeTextureRender::dealloc() {
     }
 
 }
+
 void CubeTextureRender::initTexture() {
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -158,9 +167,9 @@ void CubeTextureRender::initTexture() {
         LOGI("获取pixel 失败");
         return;
     }
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,  info.width,  info.height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, info.width, info.height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                  dataFromBmp);
-    AndroidBitmap_unlockPixels(env,saber);
+    AndroidBitmap_unlockPixels(env, saber);
     if (isAttached)
         g_jvm->DetachCurrentThread();
     glBindTexture(GL_TEXTURE_2D, 0);
