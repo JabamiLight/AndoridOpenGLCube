@@ -82,6 +82,7 @@ void CubeTextureRender::initRenderObj() {
 
 
 }
+float  y=0;
 
 void CubeTextureRender::render() {
     glViewport(0, 0, _backingWidth, _backingHeight);
@@ -94,11 +95,17 @@ void CubeTextureRender::render() {
     glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(textureLocation, 0);
     glm::mat4 model = glm::mat4(1.0f);
+    glm::mat4 view = glm::mat4(1.0f);
     long cur = getCurrentTime();
     float timeLost = (cur - currentTime) / 400.0f;
     //opengl右手 矩阵左手
-    model = glm::rotate(model, timeLost, glm::vec3(0.5f, 1.0f, 0.0f));
-    float ratio = (float) _backingWidth / (float) _backingHeight;
+//    model = glm::rotate(model, 40.0f, glm::vec3(0.5f, 1.0f, 0.0f));
+
+    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
+                       glm::vec3(0.0f, 0.0f, 0.0f),
+                       glm::vec3(0.0f, 0.0f, 0.0f)
+    );
+    glUniformMatrix4fv(viewMatLocation, 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, &(model[0][0]));
     glBindVertexArray(VAO[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -178,13 +185,10 @@ void CubeTextureRender::initMatrix() {
     modelMatLocation = glGetUniformLocation(program, "model");
     projectionMatLocation = glGetUniformLocation(program, "projection");
     currentTime = getCurrentTime();
-    glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -4.0f));
     float ratio = (float) _backingWidth / (float) _backingHeight;
     //    projection = glm::ortho(-1.0f, 1.0f, -ratio, ratio,0.1f, 10.0f);
     projection = glm::perspective(glm::radians(45.0f), ratio, 0.1f, 100.0f);
-    glUniformMatrix4fv(viewMatLocation, 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(projectionMatLocation, 1, GL_FALSE, &projection[0][0]);
 
 }
