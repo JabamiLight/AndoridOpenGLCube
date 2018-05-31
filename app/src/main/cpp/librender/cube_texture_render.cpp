@@ -4,6 +4,7 @@
 
 #include <android/bitmap.h>
 #include "cube_texture_render.h"
+#include "../glm/gtx/vector_angle.inl"
 #include <time.h>
 
 CubeTextureRender::CubeTextureRender(const char *vertex1, const char *frag1,
@@ -11,7 +12,6 @@ CubeTextureRender::CubeTextureRender(const char *vertex1, const char *frag1,
         : BaseRender(vertex1, frag1, assetManager, g_jvm1) {
     this->saber = saber;
     this->g_jvm = g_jvm1;
-    isRenderContinus = true;
 }
 
 void CubeTextureRender::initRenderObj() {
@@ -82,7 +82,8 @@ void CubeTextureRender::initRenderObj() {
 
 
 }
-float  y=0;
+
+float y = 0;
 
 void CubeTextureRender::render() {
     glViewport(0, 0, _backingWidth, _backingHeight);
@@ -96,14 +97,18 @@ void CubeTextureRender::render() {
     glUniform1i(textureLocation, 0);
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = glm::mat4(1.0f);
-    long cur = getCurrentTime();
-    float timeLost = (cur - currentTime) / 400.0f;
+//    long cur = getCurrentTime();
+//    float timeLost = (cur - currentTime) / 400.0f;
     //opengl右手 矩阵左手
-//    model = glm::rotate(model, 40.0f, glm::vec3(0.5f, 1.0f, 0.0f));
 
+//    model = glm::rotate(model, degree, glm::vec3(x, y, 0.0f));
+    glm::vec3 cross = glm::cross(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(x, y, 0.0f));
+    if (degree != 0) {
+        model = glm::rotate(model, degree / 80.0f, cross);
+    }
     view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
                        glm::vec3(0.0f, 0.0f, 0.0f),
-                       glm::vec3(0.0f, 0.0f, 0.0f)
+                       glm::vec3(0.0f, 1.0f, 0.0f)
     );
     glUniformMatrix4fv(viewMatLocation, 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(modelMatLocation, 1, GL_FALSE, &(model[0][0]));
@@ -191,5 +196,11 @@ void CubeTextureRender::initMatrix() {
     projection = glm::perspective(glm::radians(45.0f), ratio, 0.1f, 100.0f);
     glUniformMatrix4fv(projectionMatLocation, 1, GL_FALSE, &projection[0][0]);
 
+}
+
+void CubeTextureRender::rotate(jfloat x, jfloat y, jfloat degree) {
+    this->x = x;
+    this->y = y;
+    this->degree = degree;
 }
 

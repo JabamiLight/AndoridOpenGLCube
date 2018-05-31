@@ -23,7 +23,7 @@ public:
     void stop();
     void setWindow(ANativeWindow* window);
     void resetSize(jint width, jint height, ANativeWindow *pWindow);
-
+    void rotate(jfloat x,jfloat y ,jfloat degree);
 private:
     BaseRender* render;
 

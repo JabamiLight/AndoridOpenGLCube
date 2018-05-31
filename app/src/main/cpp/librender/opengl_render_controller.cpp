@@ -177,3 +177,11 @@ OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
     render = new CubeTextureRender("texture/vertex_shader.glsl", "texture/fragment_shader.glsl",
                             env->NewGlobalRef(assetManager), g_jvm,env->NewGlobalRef(saber));
 }
+
+void OpenGlRenderController::rotate(jfloat x, jfloat y, jfloat degree) {
+    pthread_mutex_lock(&mLock);
+    CubeTextureRender* render= dynamic_cast<CubeTextureRender *>(this->render);
+    render->rotate(x, y, degree);
+    pthread_cond_signal(&mCondition);
+    pthread_mutex_unlock(&mLock);
+}

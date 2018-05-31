@@ -45,3 +45,11 @@ JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_stop
         openGlCubeRenderController= nullptr;
     }
 }
+
+JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_rotate
+        (JNIEnv *, jobject,jfloat x,jfloat y,jfloat degree){
+    if (openGlCubeRenderController) {
+        openGlCubeRenderController->rotate(x,y,degree);
+    }
+
+}

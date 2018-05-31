@@ -19,6 +19,8 @@ JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_reset
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_stop
 (JNIEnv *, jobject);
+JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_rotate
+(JNIEnv *, jobject,jfloat,jfloat,jfloat);
 
 
 #ifdef __cplusplus

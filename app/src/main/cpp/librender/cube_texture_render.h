@@ -25,6 +25,7 @@ private:
     GLint textureLocation, modelMatLocation, viewMatLocation, projectionMatLocation;
 
     long currentTime;
+    float degree=0,x=0,y=0;
 
 public:
     CubeTextureRender(const char *vertex1, const char *frag1,
@@ -41,6 +42,8 @@ public:
     void initTexture();
 
     void initMatrix();
+
+    void rotate(jfloat x,jfloat y,jfloat degree);
 };
 
 
