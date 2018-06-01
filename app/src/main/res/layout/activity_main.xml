@@ -5,18 +5,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".MainActivity">
 
     <Button
         android:id="@+id/btn_vao"
         android:layout_width="match_parent"
-        android:text="VAOVBO"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="VAOVBO"/>
+
     <Button
         android:id="@+id/btn_cube_texture"
         android:layout_width="match_parent"
-        android:text="CubeTexture"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="CubeTexture"/>
+
+
+
 
 </LinearLayout>

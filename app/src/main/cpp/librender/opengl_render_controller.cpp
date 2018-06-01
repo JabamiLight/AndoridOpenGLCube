@@ -39,7 +39,7 @@ void OpenGlRenderController::renderLoop() {
         if (eglCore) {
             eglCore->makeCurrent(previewSurface);
             this->drawFrame();
-            if(!render->isRenderContinus){
+            if (!render->isRenderContinus) {
                 pthread_cond_wait(&mCondition, &mLock);
                 usleep(16 * 1000);
             }
@@ -142,15 +142,15 @@ void OpenGlRenderController::resetSize(jint width, jint height, ANativeWindow *p
     pthread_mutex_lock(&mLock);
     this->screenWidth = width;
     this->screenHeight = height;
-    _window=pWindow;
-    _msg=MSG_WINDOW_SET;
+    _window = pWindow;
+    _msg = MSG_WINDOW_SET;
     render->resetRenderSize(0, 0, width, height);
     pthread_cond_signal(&mCondition);
     pthread_mutex_unlock(&mLock);
 }
 
 OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
-                                               ) {
+) {
     LOGI("VideoDutePlayerController instance created");
     pthread_mutex_init(&mLock, nullptr);
     pthread_cond_init(&mCondition, nullptr);
@@ -175,13 +175,22 @@ OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
     JavaVM *g_jvm = NULL;
     env->GetJavaVM(&g_jvm);
     render = new CubeTextureRender("texture/vertex_shader.glsl", "texture/fragment_shader.glsl",
-                            env->NewGlobalRef(assetManager), g_jvm,env->NewGlobalRef(saber));
+                                   env->NewGlobalRef(assetManager), g_jvm,
+                                   env->NewGlobalRef(saber));
 }
 
 void OpenGlRenderController::rotate(jfloat x, jfloat y, jfloat degree) {
     pthread_mutex_lock(&mLock);
-    CubeTextureRender* render= dynamic_cast<CubeTextureRender *>(this->render);
+    CubeTextureRender *render = dynamic_cast<CubeTextureRender *>(this->render);
     render->rotate(x, y, degree);
+    pthread_cond_signal(&mCondition);
+    pthread_mutex_unlock(&mLock);
+}
+
+void OpenGlRenderController::scale(jfloat scale) {
+    pthread_mutex_lock(&mLock);
+    CubeTextureRender *render = dynamic_cast<CubeTextureRender *>(this->render);
+    render->setScale(scale);
     pthread_cond_signal(&mCondition);
     pthread_mutex_unlock(&mLock);
 }

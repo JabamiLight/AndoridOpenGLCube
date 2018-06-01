@@ -12,6 +12,8 @@ class NativeOpenglControler {
     external fun stop()
     external fun initCube(assetManager: AssetManager?, b: Bitmap?);
     external fun rotate(x:Float,y:Float,degree:Float)
+    external fun scale(d: Float) ;
+
     companion object {
         init {
             System.loadLibrary("native-lib")

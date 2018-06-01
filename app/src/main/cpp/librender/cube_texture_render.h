@@ -23,9 +23,11 @@ private:
     JavaVM *g_jvm;
     GLuint texture;
     GLint textureLocation, modelMatLocation, viewMatLocation, projectionMatLocation;
+    glm::mat4 model = glm::mat4(1.0f);
 
     long currentTime;
-    float degree=0,x=0,y=0;
+    float degree=0,x=0,y=0,scale=1.0,fov=45.0f;
+    glm::vec3 lastCross;
 
 public:
     CubeTextureRender(const char *vertex1, const char *frag1,
@@ -44,6 +46,10 @@ public:
     void initMatrix();
 
     void rotate(jfloat x,jfloat y,jfloat degree);
+
+    void setScale(jfloat d);
+
+
 };
 
 

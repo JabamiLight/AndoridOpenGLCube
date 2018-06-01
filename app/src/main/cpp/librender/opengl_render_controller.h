@@ -24,6 +24,9 @@ public:
     void setWindow(ANativeWindow* window);
     void resetSize(jint width, jint height, ANativeWindow *pWindow);
     void rotate(jfloat x,jfloat y ,jfloat degree);
+
+    void scale(jfloat scale);
+
 private:
     BaseRender* render;
 

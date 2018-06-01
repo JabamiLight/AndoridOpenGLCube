@@ -53,3 +53,9 @@ JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_rotat
     }
 
 }
+JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_scale
+        (JNIEnv *, jobject,jfloat scale){
+    if (openGlCubeRenderController) {
+        openGlCubeRenderController->scale(scale);
+    }
+}
