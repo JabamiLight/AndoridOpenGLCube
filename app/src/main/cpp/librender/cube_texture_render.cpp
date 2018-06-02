@@ -136,6 +136,7 @@ void CubeTextureRender::render() {
     glBindVertexArray(VAO[0]);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
+
 }
 
 void CubeTextureRender::dealloc() {
