@@ -26,7 +26,7 @@ private:
     glm::mat4 model = glm::mat4(1.0f);
 
     long currentTime;
-    float degree=0,x=0,y=0,scale=1.0,fov=45.0f;
+    float degree=0,x=0,y=0,fov=45.0f;
     glm::vec3 lastCross;
 
 public:

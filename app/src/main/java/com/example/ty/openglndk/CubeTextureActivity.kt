@@ -49,14 +49,13 @@ class CubeTextureActivity : AppCompatActivity() {
                 MotionEvent.ACTION_DOWN -> {
                     lastX = event.getX()
                     lastY = event.getY()
-                    Log.d("tedu", "µ¥Ö¸: ");
                     canRotate = true
                     canScale = false
+
                 }
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     canRotate = false
                     canScale = true
-                    Log.d("tedu", "Ë«Ö¸: ");
                     if (event.pointerCount > 2) {
                         canScale = false
                         return@setOnTouchListener false
@@ -67,16 +66,26 @@ class CubeTextureActivity : AppCompatActivity() {
                     lastY = event.getY(index0)
                     last1X = event.getX(index1)
                     last1Y = event.getY(index1)
+                    controler.rotate(0.0f, 0.0f, 0.0f)
+
                 }
                 MotionEvent.ACTION_POINTER_UP -> {
+                    canScale=false
+                    canRotate=false
+                    controler.rotate(0.0f, 0.0f, 0.0f)
+
                 }
                 MotionEvent.ACTION_MOVE -> {
                     if (canRotate) {
+                        if(event.pointerCount>=2){
+                            controler.rotate(0.0f, 0.0f, 0.0f)
+                            return@setOnTouchListener true
+                        }
                         val curY = event.y
                         val curX = event.x
                         val vecX = curX - lastX
                         val vecY = curY - lastY
-                        lastY = curY;
+                        lastY = curY
                         lastX = curX
                         val distance = Math.sqrt((vecX * vecX).toDouble() + (vecY * vecY).toDouble())
                         controler.rotate(vecX, vecY, distance.toFloat())

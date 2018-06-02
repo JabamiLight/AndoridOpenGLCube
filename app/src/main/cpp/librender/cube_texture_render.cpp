@@ -101,8 +101,6 @@ void CubeTextureRender::render() {
     //opengl右手 矩阵左手
 
 //    model = glm::rotate(model, degree, glm::vec3(x, y, 0.0f));
-    float z;
-    LOGI("count %f,%f", x, y);
     if (x > 0 && y > 0) {
         y = -y;
     } else if (x <= 0 && y > 0) {
@@ -113,6 +111,8 @@ void CubeTextureRender::render() {
     } else if (x <= 0 && y < 0) {
         y = -y;
     }
+   LOGE("tedu %f %f %f" ,x,y,degree);
+
     if (degree != 0) {
         glm::vec3 cross = glm::cross(glm::vec3(0.0f, 0.0f, 1.0), glm::vec3(x, y, 0.0f));
         glm::mat4 tmpMat = glm::mat4(1.0f);
@@ -127,17 +127,7 @@ void CubeTextureRender::render() {
     glm::mat4 projection = glm::mat4(1.0f);
     float ratio = (float) _backingWidth / (float) _backingHeight;
     //    projection = glm::ortho(-1.0f, 1.0f, -ratio, ratio,0.1f, 10.0f);
-    LOGE("scale %f",scale);
-    if (scale > 1) {
-        fov += scale;
-    } else if(scale<1) {
-        fov -=  (1.0f/scale);
-    }
-    if (fov <= 10.0) {
-        fov = 10.0;
-    } else if (fov > 170.0) {
-        fov = 170.0;
-    }
+
     projection = glm::perspective(glm::radians(fov), ratio, 0.1f, 100.0f);
 
     glUniformMatrix4fv(viewMatLocation, 1, GL_FALSE, &view[0][0]);
@@ -231,8 +221,18 @@ void CubeTextureRender::rotate(jfloat x, jfloat y, jfloat degree) {
     this->degree = degree / 80.0f;
 }
 
-void CubeTextureRender::setScale(jfloat d) {
-    this->scale = d;
+void CubeTextureRender::setScale(jfloat scale) {
+    LOGE("scale %f",scale);
+    if (scale > 1) {
+        fov -= scale;
+    } else if(scale<1) {
+        fov +=  (1.0f/scale);
+    }
+    if (fov <= 20.0) {
+        fov = 20.0;
+    } else if (fov > 140.0) {
+        fov = 140.0;
+    }
 }
 
 
