@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Surface
 import android.view.TextureView
 import kotlinx.android.synthetic.main.activity_vao_vbo.*
+import java.util.*
 
 
 class VAOVBOActivity : AppCompatActivity() {
@@ -16,6 +17,9 @@ class VAOVBOActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_vao_vbo)
         controler = NativeOpenglControler()
+        btn.setOnClickListener {
+            surface.rotation= Random().nextInt(100).toFloat()
+        }
         surface.setSurfaceTextureListener(object: TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
                 controler?.resetSize(width, height, Surface(surface))

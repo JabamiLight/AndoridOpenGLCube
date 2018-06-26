@@ -19,6 +19,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="CubeTexture"/>
+    <Button
+        android:id="@+id/btn_pbo_frame_rate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PboTexture"/>
 
 
 

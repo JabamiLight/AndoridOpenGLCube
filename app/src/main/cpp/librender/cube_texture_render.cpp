@@ -213,7 +213,6 @@ void CubeTextureRender::initMatrix() {
     projectionMatLocation = glGetUniformLocation(program, "projection");
     currentTime = getCurrentTime();
 
-
 }
 
 void CubeTextureRender::rotate(jfloat x, jfloat y, jfloat degree) {

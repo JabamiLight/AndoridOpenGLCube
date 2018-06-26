@@ -16,5 +16,8 @@ class MainActivity : AppCompatActivity() {
         btn_cube_texture.setOnClickListener {
             startActivity<CubeTextureActivity>()
         }
+        btn_pbo_frame_rate.setOnClickListener {
+            startActivity<PBOActivity>()
+        }
     }
 }

@@ -4,6 +4,7 @@
 
 #include "opengl_render_controller.h"
 #include "cube_texture_render.h"
+#include "pbo_render.h"
 
 #define LOG_TAG "PicPreviewController"
 
@@ -193,4 +194,24 @@ void OpenGlRenderController::scale(jfloat scale) {
     render->setScale(scale);
     pthread_cond_signal(&mCondition);
     pthread_mutex_unlock(&mLock);
+}
+
+OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager,
+                                               jobjectArray bitmapArray) {
+
+    LOGI("VideoDutePlayerController instance saber");
+    pthread_mutex_init(&mLock, nullptr);
+    pthread_cond_init(&mCondition, nullptr);
+    screenWidth = 720;
+    screenHeight = 720;
+    JavaVM *g_jvm = NULL;
+    env->GetJavaVM(&g_jvm);
+    jsize length = env->GetArrayLength(bitmapArray);
+    jobject* bitmaps=new jobject[length];
+    for(size_t i =0;i<length;i++){
+        bitmaps[i]=env->NewGlobalRef(env->GetObjectArrayElement(bitmapArray,i));
+    }
+    render = new PboRender("simplePBO/vertex_shader.glsl", "simplePBO/fragment_shader.glsl",
+                           env->NewGlobalRef(assetManager),g_jvm,bitmaps ,
+                           length);
 }

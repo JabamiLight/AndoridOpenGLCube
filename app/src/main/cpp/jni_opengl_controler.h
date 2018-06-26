@@ -23,6 +23,8 @@ JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_rotat
 (JNIEnv *, jobject,jfloat,jfloat,jfloat);
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_scale
 (JNIEnv *, jobject,jfloat);
+JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_initPbo
+(JNIEnv *, jobject,jobject,jobjectArray);
 
 
 #ifdef __cplusplus

@@ -10,9 +10,10 @@ class NativeOpenglControler {
     external fun init(assetManager: AssetManager?)
     external fun resetSize(width: Int, height: Int, surface: Any?)
     external fun stop()
-    external fun initCube(assetManager: AssetManager?, b: Bitmap?);
+    external fun initCube(assetManager: AssetManager?, b: Bitmap?)
     external fun rotate(x:Float,y:Float,degree:Float)
-    external fun scale(d: Float) ;
+    external fun scale(d: Float)
+    external fun initPbo(assets: AssetManager?, bitmapArray: Array<Bitmap>)
 
     companion object {
         init {

@@ -18,6 +18,8 @@ public:
                              );
     OpenGlRenderController(JNIEnv *env, jobject assetManager,jobject saber
                              );
+    OpenGlRenderController(JNIEnv *env, jobject assetManager,jobjectArray saber
+                             );
     virtual ~OpenGlRenderController();
     bool start();
     void stop();

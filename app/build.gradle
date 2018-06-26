@@ -35,7 +35,7 @@ android {
     }
 
 }
-kotlin{
+kotlin {
 
 }
 dependencies {
