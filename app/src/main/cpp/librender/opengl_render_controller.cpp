@@ -209,6 +209,7 @@ void OpenGlRenderController::scale(jfloat scale) {
 
 
 int OpenGlRenderController::fps() {
+    if(!render->caculateFps) return 0;
     static int fps = 0;
     static long long lastTime = getCurrentTime(); // ms
     static int frameCount = 0;

@@ -45,7 +45,7 @@ public:
 
     virtual void initRenderObj()=0;
     bool isRenderContinus= false;
-
+    bool caculateFps=false;
 };
 
 

@@ -77,6 +77,7 @@ PboRender::PboRender(const char *vertex1, const char *frag1, jobject assetManage
     this->g_jvm = g_jvm;
     this->pics = bitmapArray;
     isRenderContinus = true;
+    caculateFps=true;
     this->length = length;
 }
 
@@ -103,9 +104,13 @@ void PboRender::resetTexture() {
         LOGI("获取pixel 失败");
         return;
     }
+
+    long long  curTime = getCurrentTime();
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, info.width, info.height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                  dataFromBmp);
+    long long consumTime=getCurrentTime()-curTime;
+    LOGE("上传纹理时间%lld",consumTime);
     AndroidBitmap_unlockPixels(env, convertPic);
     if (isAttached)
         g_jvm->DetachCurrentThread();
