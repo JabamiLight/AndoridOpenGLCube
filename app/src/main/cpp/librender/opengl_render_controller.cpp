@@ -87,7 +87,7 @@ void OpenGlRenderController::drawFrame() {
     if (!eglCore->swapBuffers(previewSurface)) {
         LOGE("eglSwapBuffers() returned error %d", eglGetError());
     }
-
+    fps();
 
 }
 
@@ -103,6 +103,17 @@ void OpenGlRenderController::destroy() {
         eglCore->release();
         eglCore = NULL;
     }
+    int status;
+    JNIEnv *env;
+    bool isAttached = false;
+    status = g_jvm->GetEnv((void **) &env, JNI_VERSION_1_6);
+    if (status < 0) {
+        g_jvm->AttachCurrentThread(&env, NULL);//将当前线程注册到虚拟机中．
+        isAttached = true;
+    }
+    env->DeleteGlobalRef(jObj);
+    if (isAttached)
+        g_jvm->DetachCurrentThread();
 }
 
 
@@ -196,22 +207,57 @@ void OpenGlRenderController::scale(jfloat scale) {
     pthread_mutex_unlock(&mLock);
 }
 
-OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager,
-                                               jobjectArray bitmapArray) {
 
+int OpenGlRenderController::fps() {
+    static int fps = 0;
+    static long long lastTime = getCurrentTime(); // ms
+    static int frameCount = 0;
+
+    ++frameCount;
+
+    long long curTime = getCurrentTime();
+    if (curTime - lastTime > 1000) // 取固定时间间隔为1秒
+    {
+        fps = frameCount;
+        frameCount = 0;
+        lastTime = curTime;
+        int status;
+        JNIEnv *env;
+        bool isAttached = false;
+        status = g_jvm->GetEnv((void **) &env, JNI_VERSION_1_6);
+        if (status < 0) {
+            g_jvm->AttachCurrentThread(&env, NULL);//将当前线程注册到虚拟机中．
+            isAttached = true;
+        }
+        jclass clazz = env->GetObjectClass(jObj);
+        jmethodID methodId = env->GetMethodID(clazz, "onFrame", "(I)V");
+        env->CallVoidMethod(jObj, methodId, fps);
+        if (isAttached)
+            g_jvm->DetachCurrentThread();
+
+    }
+    return fps;
+}
+
+OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject thiz, jobject assetManager,
+                                               jobjectArray bitmapArray) {
     LOGI("VideoDutePlayerController instance saber");
     pthread_mutex_init(&mLock, nullptr);
     pthread_cond_init(&mCondition, nullptr);
     screenWidth = 720;
     screenHeight = 720;
-    JavaVM *g_jvm = NULL;
+    g_jvm = NULL;
+    this->jObj = env->NewGlobalRef(thiz);
     env->GetJavaVM(&g_jvm);
     jsize length = env->GetArrayLength(bitmapArray);
-    jobject* bitmaps=new jobject[length];
-    for(size_t i =0;i<length;i++){
-        bitmaps[i]=env->NewGlobalRef(env->GetObjectArrayElement(bitmapArray,i));
+    jobject *bitmaps = new jobject[length];
+    for (size_t i = 0; i < length; i++) {
+        bitmaps[i] = env->NewGlobalRef(env->GetObjectArrayElement(bitmapArray, i));
     }
     render = new PboRender("simplePBO/vertex_shader.glsl", "simplePBO/fragment_shader.glsl",
-                           env->NewGlobalRef(assetManager),g_jvm,bitmaps ,
+                           env->NewGlobalRef(assetManager), g_jvm, bitmaps,
                            length);
+
 }
+
+

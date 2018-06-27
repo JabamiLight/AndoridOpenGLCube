@@ -18,7 +18,7 @@ public:
                              );
     OpenGlRenderController(JNIEnv *env, jobject assetManager,jobject saber
                              );
-    OpenGlRenderController(JNIEnv *env, jobject assetManager,jobjectArray saber
+    OpenGlRenderController(JNIEnv *env,jobject thiz,jobject assetManager,jobjectArray saber
                              );
     virtual ~OpenGlRenderController();
     bool start();
@@ -28,6 +28,7 @@ public:
     void rotate(jfloat x,jfloat y ,jfloat degree);
 
     void scale(jfloat scale);
+    int fps();
 
 private:
     BaseRender* render;
@@ -49,6 +50,8 @@ private:
     EGLCore* eglCore= nullptr;
     EGLSurface previewSurface;
 
+    JavaVM *g_jvm;
+    jobject jObj;
     // Helper method for starting the thread
     static void* threadStartCallback(void *myself);
     // RenderLoop is called in a rendering thread started in start() method

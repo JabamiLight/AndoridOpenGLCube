@@ -57,11 +57,11 @@ JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_scale
 }
 
 JNIEXPORT void JNICALL Java_com_example_ty_openglndk_NativeOpenglControler_initPbo
-        (JNIEnv *env, jobject, jobject assetManager, jobjectArray bitmapArray) {
+        (JNIEnv *env, jobject thiz, jobject assetManager, jobjectArray bitmapArray) {
     if(openGlRenderController) {
         Java_com_example_ty_openglndk_NativeOpenglControler_stop(nullptr, nullptr);
     }
-    openGlRenderController = new OpenGlRenderController(env, assetManager, bitmapArray);
+    openGlRenderController = new OpenGlRenderController(env,thiz, assetManager, bitmapArray);
     openGlRenderController->start();
 
 }
