@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <android/native_window.h>
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
 
 //定义一个函数指针
 typedef EGLBoolean (EGLAPIENTRYP PFNEGLPRESENTATIONTIMEANDROIDPROC)(EGLDisplay display, EGLSurface surface, khronos_stime_nanoseconds_t time);

@@ -5,7 +5,10 @@
 
 #include <android/bitmap.h>
 #include "pbo_render.h"
-
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 void PboRender::initRenderObj() {
 
@@ -44,17 +47,15 @@ void PboRender::initRenderObj() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glGenFramebuffers(1,&frame);
-    glBindFramebuffer(GL_FRAMEBUFFER,frame);
-    glGenTextures(1,&textureFrame);
-    glBindTexture(GL_TEXTURE_2D,textureFrame);
+    glGenFramebuffers(1, &frame);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame);
+    glGenTextures(1, &textureFrame);
+    glBindTexture(GL_TEXTURE_2D, textureFrame);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-
-    initPob();
+    glBindBuffer(GL_FRAMEBUFFER, 0);
     initTexture();
 
 }
@@ -71,22 +72,20 @@ void PboRender::render() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(program);
-    long long cur=getCurrentTime();
-    resetTexture();
-    LOGE("重置纹理时间%lld",getCurrentTime()-cur);
+    glBindFramebuffer(GL_FRAMEBUFFER, frame);
+//    resetTexture();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(textureLocation, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER,frame);
     glBindVertexArray(VAO[0]);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     readPixels();
-    glBindFramebuffer(GL_FRAMEBUFFER,0);
-    glViewport(0, 0, _backingWidth, _backingHeight);
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glBindTexture(GL_TEXTURE_2D, textureFrame);
-    glBindVertexArray(VAO[0]);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//    glViewport(0, 0, _backingWidth, _backingHeight);
+//    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+//    glBindTexture(GL_TEXTURE_2D, textureFrame);
+//    glBindVertexArray(VAO[0]);
+//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 }
 
@@ -126,21 +125,27 @@ void PboRender::resetTexture() {
         LOGI("获取pixel 失败");
         return;
     }
-    curPicWidth=info.width;
-    curPicHeight=info.height;
+    curPicWidth = info.width;
+    curPicHeight = info.height;
     long long curTime = getCurrentTime();
 
     long long consumTime = 0;
 
+
+    initPob();
+
+    glBindTexture(GL_TEXTURE_2D, textureFrame);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curPicWidth, curPicHeight, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE,
+                 NULL);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureFrame,
+                           0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
     if (uoloadPboType == NONE) {
-        glBindTexture(GL_TEXTURE_2D,textureFrame);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curPicWidth, curPicHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-        glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_2D,textureFrame,0);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, info.width, info.height, 0, GL_RGBA,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curPicWidth, curPicHeight, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE,
                      dataFromBmp);
-
 
 //        LOGE("复制数据时间%lld", getCurrentTime() - curTime);
     } else if (uoloadPboType == ONE) {
@@ -152,7 +157,6 @@ void PboRender::resetTexture() {
                      GL_UNSIGNED_BYTE,
                      0);
         LOGE("上传纹理时间%lld", getCurrentTime() - curTime);
-
 
 
         curTime = getCurrentTime();
@@ -170,7 +174,6 @@ void PboRender::resetTexture() {
         }
         consumTime = getCurrentTime() - curTime;
         LOGE("++复制数据时间%lld", consumTime);
-
 
 
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
@@ -195,7 +198,8 @@ void PboRender::resetTexture() {
         curTime = getCurrentTime();
         GLubyte *ptr = (GLubyte *) glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0,
                                                     info.width * info.height * 4,
-                                                    GL_MAP_WRITE_BIT|GL_MAP_INVALIDATE_BUFFER_BIT);
+                                                    GL_MAP_WRITE_BIT |
+                                                    GL_MAP_INVALIDATE_BUFFER_BIT);
         LOGE("获取映射时间时间%lld", getCurrentTime() - curTime);
         if (ptr) {
             curTime = getCurrentTime();
@@ -215,8 +219,6 @@ void PboRender::resetTexture() {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, info.width, info.height, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE,
                      0);
-
-
 
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[nextIndex]);
         curTime = getCurrentTime();
@@ -244,30 +246,32 @@ void PboRender::resetTexture() {
 }
 
 void PboRender::initPob() {
-    uploadPobs = new GLuint[3];
-    downloadPbos = new GLuint[2];
-    glGenBuffers(3, uploadPobs);
-    glGenBuffers(2, downloadPbos);
-    int align=128;
-    int width=6000;
-    int height=6000;
-    mPboSize = ((width * 4 + (align - 1)) & ~(align - 1)) * height;
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[0]);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, mPboSize, 0, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[1]);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, mPboSize, 0, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[2]);
-    glBufferData(GL_PIXEL_UNPACK_BUFFER, mPboSize, 0, GL_STREAM_DRAW);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-
-
-    glBindBuffer(GL_PIXEL_PACK_BUFFER, uploadPobs[0]);
-    glBufferData(GL_PIXEL_PACK_BUFFER, mPboSize, 0, GL_STATIC_READ);
-    glBindBuffer(GL_PIXEL_PACK_BUFFER, uploadPobs[1]);
-    glBufferData(GL_PIXEL_PACK_BUFFER, mPboSize, 0, GL_STATIC_READ);
-    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-
-
+    if (initPbo) {
+        initPbo = false;
+        uploadPobs = new GLuint[3];
+        downloadPbos = new GLuint[2];
+        glGenBuffers(3, uploadPobs);
+        glGenBuffers(2, downloadPbos);
+        int align = 128;
+        int width = curPicWidth;
+        int height = curPicHeight;
+//        mPboSize = ((width * 4 + (align - 1)) & ~(align - 1)) * height;
+        mPboSize = curPicWidth * curPicHeight * 4;
+        int mRowStride = (width * 4 + (align - 1)) & ~(align - 1);
+        mPboSize = mRowStride * height;
+//        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[0]);
+//        glBufferData(GL_PIXEL_UNPACK_BUFFER, mPboSize, 0, GL_STREAM_DRAW);
+//        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[1]);
+//        glBufferData(GL_PIXEL_UNPACK_BUFFER, mPboSize, 0, GL_STREAM_DRAW);
+//        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[2]);
+//        glBufferData(GL_PIXEL_UNPACK_BUFFER, mPboSize, 0, GL_STREAM_DRAW);
+//        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, downloadPbos[0]);
+        glBufferData(GL_PIXEL_PACK_BUFFER, mPboSize, 0, GL_STATIC_READ);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, downloadPbos[1]);
+        glBufferData(GL_PIXEL_PACK_BUFFER, mPboSize, 0, GL_STATIC_READ);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    }
 
 
 }
@@ -278,41 +282,72 @@ void PboRender::unBindPbo() {
     nextIndex = (index + 1) % 2;
 }
 
+
 void PboRender::readPixels() {
 
-    int size=_backingHeight*_backingWidth*4;
-    FILE *file = fopen("/mnt/sdcard/readPixel.rgba", "wb");
-    long long curTime=getCurrentTime();
-    if(downloadPboType==NONE){
-        byte* pixel=new byte[size];
-        glReadPixels(0,0,_backingWidth,_backingHeight,GL_RGBA,GL_UNSIGNED_BYTE,pixel);
-        fwrite(pixel,size,1,file);
-        delete [] pixel;
-    } else if(downloadPboType==ONE){
-        
-    } else if(downloadPboType==TWO){
+    int size = curPicWidth * curPicHeight * 4;
+    char path[40];
+    sprintf(path, "/mnt/sdcard/pixel/readPixel%d.rgba", picCount);
+//    picCount--;
+    if (picCount <= 0) {
+        return;
+    }
+    if (!cachePixel) {
+        cachePixel = new byte[size];
+    }
+    if (access("/mnt/sdcard/pixel", 0)) {
+        mkdir("/mnt/sdcard/pixel", S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+    }
+    FILE *file = fopen(path, "wb");
+    long long curTime = getCurrentTime();
+    if (downloadPboType == NONE) {
+        long long cc = getCurrentTime();
+        byte *pixel = new byte[size];
+        glReadPixels(0, 0, curPicWidth, curPicHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
+        LOGE("读取耗时 %lld", getCurrentTime() - cc);
+        cc = getCurrentTime();
+//        fwrite(pixel, size, 1, file);
+//        memcpy(cachePixel, pixel, size);
+        for (int i = 0; i < size; i++) {
+            cachePixel[i] = pixel[i];
+        }
+        LOGE("内存复制耗时 %lld", getCurrentTime() - cc);
+        delete[] pixel;
+    } else if (downloadPboType == ONE) {
+
+    } else if (downloadPboType == TWO) {
         index = (index + 1) % 2;
         nextIndex = (index + 1) % 2;
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glBindBuffer(GL_PIXEL_PACK_BUFFER, uploadPobs[index]);
-        glReadPixels(0,0,_backingWidth,_backingHeight,GL_RGBA,GL_UNSIGNED_BYTE,0);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, downloadPbos[index]);
+        long long cc = getCurrentTime();
+        glReadPixels(0, 0, curPicWidth, curPicHeight, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        LOGE("glReadPixels Time %lld", getCurrentTime() - cc);
 
-        glBindBuffer(GL_PIXEL_PACK_BUFFER, uploadPobs[nextIndex]);
-//        glBufferData(GL_PIXEL_PACK_BUFFER, info.width*info.height*4, dataFromBmp, GL_STREAM_DRAW);
-
-        GLubyte *ptr = (GLubyte *) glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0,
-                                                    size,
-                                                    GL_MAP_READ_BIT);
-        if (ptr) {
-            glUnmapBuffer(GL_PIXEL_PACK_BUFFER); // release pointer to mapping buffer
-            fwrite(ptr,size,1,file);
+        if (readPixInit) {
+            readPixInit = false;
+            glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+            return;
         }
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, downloadPbos[nextIndex]);
+        GLubyte *ptr = (GLubyte *) glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0,
+                                                    mPboSize,
+                                                    GL_MAP_READ_BIT);
+        glUnmapBuffer(GL_PIXEL_PACK_BUFFER); // release pointer to mapping buffer
         glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-    }
+        cc = getCurrentTime();
+        if (ptr) {
+//            memcpy(cachePixel, ptr, size);
+            for (int i = 0; i < size; i++) {
+                cachePixel[i] = ptr[i];
+            }
+        }
+//            fwrite(ptr, size, 1, file);
+        LOGE("内存复制耗时 %lld", getCurrentTime() - cc);
 
+    }
     fclose(file);
 
-    LOGE("读取完成耗时%lld",getCurrentTime()-curTime);
+    LOGE("读取完成耗时%lld", getCurrentTime() - curTime);
 }
 
 

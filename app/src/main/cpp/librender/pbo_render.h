@@ -19,15 +19,18 @@ private:
     char textureIndex=0;
     GLint textureLocation;
     GLuint * uploadPobs,* downloadPbos;
-    int index=0,nextIndex=0;
+    byte* cachePixel= nullptr;
+    int index=-1,nextIndex=0;
+    int picCount=10;
     int curPicWidth,curPicHeight;
-    bool  init=true;
-    enum PBOTYPE{
-        NONE,ONE,TWO,THREE
+    bool  initPbo=true;
+    bool initFrame=true;
+    bool  readPixInit=true;
+
+    enum PBOTYPE{        NONE,ONE,TWO,THREE
     };
     PBOTYPE uoloadPboType=NONE;
     PBOTYPE downloadPboType=TWO;
-
     GLuint frame;
     GLuint textureFrame;
 

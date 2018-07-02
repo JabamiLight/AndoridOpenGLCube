@@ -24,7 +24,7 @@ class PBOActivity : AppCompatActivity() {
         }
         val op = BitmapFactory.Options()
         op.inPreferredConfig = Bitmap.Config.ARGB_8888
-        var a = BitmapFactory.decodeResource(resources, R.mipmap.bigpic, op)
+        var a = BitmapFactory.decodeResource(resources, R.mipmap.xiaoren_1, op)
 //        var b = BitmapFactory.decodeResource(resources, R.mipmap.bigpic2, op)
         val bitmapArray = arrayOf<Bitmap>(
                 a
