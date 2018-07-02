@@ -103,17 +103,19 @@ void OpenGlRenderController::destroy() {
         eglCore->release();
         eglCore = NULL;
     }
-    int status;
-    JNIEnv *env;
-    bool isAttached = false;
-    status = g_jvm->GetEnv((void **) &env, JNI_VERSION_1_6);
-    if (status < 0) {
-        g_jvm->AttachCurrentThread(&env, NULL);//将当前线程注册到虚拟机中．
-        isAttached = true;
+    if (jObj) {
+        int status;
+        JNIEnv *env;
+        bool isAttached = false;
+        status = g_jvm->GetEnv((void **) &env, JNI_VERSION_1_6);
+        if (status < 0) {
+            g_jvm->AttachCurrentThread(&env, NULL);//将当前线程注册到虚拟机中．
+            isAttached = true;
+        }
+        env->DeleteGlobalRef(jObj);
+        if (isAttached)
+            g_jvm->DetachCurrentThread();
     }
-    env->DeleteGlobalRef(jObj);
-    if (isAttached)
-        g_jvm->DetachCurrentThread();
 }
 
 
@@ -168,7 +170,7 @@ OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
     pthread_cond_init(&mCondition, nullptr);
     screenWidth = 720;
     screenHeight = 720;
-    JavaVM *g_jvm = NULL;
+    g_jvm = NULL;
     env->GetJavaVM(&g_jvm);
     render = new ShapeRener("shape/vertex_shader.glsl", "shape/fragment_shader.glsl",
                             env->NewGlobalRef(assetManager), g_jvm);
@@ -184,7 +186,7 @@ OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
     pthread_cond_init(&mCondition, nullptr);
     screenWidth = 720;
     screenHeight = 720;
-    JavaVM *g_jvm = NULL;
+    g_jvm = NULL;
     env->GetJavaVM(&g_jvm);
     render = new CubeTextureRender("texture/vertex_shader.glsl", "texture/fragment_shader.glsl",
                                    env->NewGlobalRef(assetManager), g_jvm,
@@ -209,7 +211,7 @@ void OpenGlRenderController::scale(jfloat scale) {
 
 
 int OpenGlRenderController::fps() {
-    if(!render->caculateFps) return 0;
+    if (!render->caculateFps) return 0;
     static int fps = 0;
     static long long lastTime = getCurrentTime(); // ms
     static int frameCount = 0;
