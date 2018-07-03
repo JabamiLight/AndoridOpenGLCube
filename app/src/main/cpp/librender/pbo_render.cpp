@@ -335,7 +335,7 @@ void PboRender::readPixels() {
         LOGE("glReadPixels Time %lld", getCurrentTime() - cc);
         cc = getCurrentTime();
 //        fwrite(pixel, size, 1, file);
-        memcpy(cachePixel, pixel, size);
+        my_copy(cachePixel, pixel, size);
         LOGE("内存复制耗时 %lld", getCurrentTime() - cc);
         delete[] pixel;
     } else if (downloadPboType == ONE) {
