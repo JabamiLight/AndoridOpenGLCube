@@ -47,7 +47,7 @@ private:
 
     // android window, supported by NDK r5 and newer
     ANativeWindow* _window;
-    EGLCore* eglCore= nullptr;
+    EGLCore* eglCore= NULL;
     EGLSurface previewSurface;
 
     JavaVM *g_jvm;

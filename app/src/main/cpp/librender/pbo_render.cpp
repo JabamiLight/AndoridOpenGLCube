@@ -24,15 +24,15 @@ void PboRender::initRenderObj() {
     glGenBuffers(1, VBO);
 
     float vertices1[] = {
-            1.0f, -1.0f, 0.0f, 1.0f, 1.0f,  // 右下角
-            1.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // 右上角
-            -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, // 左下角
-            -1.0f, 1.0f, 0.0f, 0.0f, 0.0f   // 左上角
+            1.0f, -1.0f, 0.0f, 1.0f, 0.0f,  // 右下角
+            1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  // 右上角
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // 左下角
+            -1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // 左上角
     };
     glBindVertexArray(VAO[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBO[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), nullptr);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), NULL);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
                           reinterpret_cast<const void *>(3 * sizeof(float)));
@@ -68,24 +68,27 @@ void PboRender::initTexture() {
 }
 
 void PboRender::render() {
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glDisable(GL_DITHER);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glViewport(0, 0, curPicWidth, curPicHeight);
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(program);
-    glBindFramebuffer(GL_FRAMEBUFFER, frame);
 //    resetTexture();
+    glBindFramebuffer(GL_FRAMEBUFFER, frame);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(textureLocation, 0);
     glBindVertexArray(VAO[0]);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     readPixels();
-//    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    glViewport(0, 0, _backingWidth, _backingHeight);
-//    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-//    glBindTexture(GL_TEXTURE_2D, textureFrame);
-//    glBindVertexArray(VAO[0]);
-//    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glViewport(0, 0, _backingWidth, _backingHeight);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, textureFrame);
+    glBindVertexArray(VAO[0]);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 }
 
@@ -134,15 +137,21 @@ void PboRender::resetTexture() {
 
     initPob();
 
-    glBindTexture(GL_TEXTURE_2D, textureFrame);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curPicWidth, curPicHeight, 0, GL_RGBA,
-                 GL_UNSIGNED_BYTE,
-                 NULL);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureFrame,
-                           0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    if (initFrame) {
+        glBindFramebuffer(GL_FRAMEBUFFER, frame);
+        glBindTexture(GL_TEXTURE_2D, textureFrame);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curPicWidth, curPicHeight, 0, GL_RGBA,
+                     GL_UNSIGNED_BYTE,
+                     NULL);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureFrame,
+                               0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        initFrame = false;
+    }
+
 
     if (uoloadPboType == NONE) {
+        glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, curPicWidth, curPicHeight, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE,
                      dataFromBmp);
@@ -250,15 +259,15 @@ void PboRender::initPob() {
         initPbo = false;
         uploadPobs = new GLuint[3];
         downloadPbos = new GLuint[2];
-        glGenBuffers(3, uploadPobs);
+//        glGenBuffers(3, uploadPobs);
         glGenBuffers(2, downloadPbos);
         int align = 128;
         int width = curPicWidth;
         int height = curPicHeight;
 //        mPboSize = ((width * 4 + (align - 1)) & ~(align - 1)) * height;
         mPboSize = curPicWidth * curPicHeight * 4;
-        int mRowStride = (width * 4 + (align - 1)) & ~(align - 1);
-        mPboSize = mRowStride * height;
+//         mRowStride = (width * 4 + (align - 1)) & ~(align - 1);
+//        mPboSize = mRowStride * height;
 //        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[0]);
 //        glBufferData(GL_PIXEL_UNPACK_BUFFER, mPboSize, 0, GL_STREAM_DRAW);
 //        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, uploadPobs[1]);
@@ -267,13 +276,29 @@ void PboRender::initPob() {
 //        glBufferData(GL_PIXEL_UNPACK_BUFFER, mPboSize, 0, GL_STREAM_DRAW);
 //        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, downloadPbos[0]);
-        glBufferData(GL_PIXEL_PACK_BUFFER, mPboSize, 0, GL_STATIC_READ);
+        glBufferData(GL_PIXEL_PACK_BUFFER, mPboSize, NULL, GL_DYNAMIC_READ);
+
         glBindBuffer(GL_PIXEL_PACK_BUFFER, downloadPbos[1]);
-        glBufferData(GL_PIXEL_PACK_BUFFER, mPboSize, 0, GL_STATIC_READ);
+        glBufferData(GL_PIXEL_PACK_BUFFER, mPboSize, NULL, GL_DYNAMIC_READ);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     }
 
 
+}
+
+
+void my_copy(volatile unsigned char *dst, volatile unsigned char *src, int sz)
+{
+    if (sz & 63) {
+        sz = (sz & -64) + 64;
+    }
+    asm volatile (
+    "NEONCopyPLD: \n"
+            " VLDM %[src]!,{d0-d7} \n"
+            " VSTM %[dst]!,{d0-d7} \n"
+            " SUBS %[sz],%[sz],#0x40 \n"
+            " BGT NEONCopyPLD \n"
+    : [dst]"+r"(dst), [src]"+r"(src), [sz]"+r"(sz) : : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "cc", "memory");
 }
 
 void PboRender::unBindPbo() {
@@ -285,7 +310,7 @@ void PboRender::unBindPbo() {
 
 void PboRender::readPixels() {
 
-    int size = curPicWidth * curPicHeight * 4;
+    int size = mPboSize;
     char path[40];
     sprintf(path, "/mnt/sdcard/pixel/readPixel%d.rgba", picCount);
 //    picCount--;
@@ -294,26 +319,27 @@ void PboRender::readPixels() {
     }
     if (!cachePixel) {
         cachePixel = new byte[size];
+        memset(cachePixel, 0, size);
     }
-    if (access("/mnt/sdcard/pixel", 0)) {
-        mkdir("/mnt/sdcard/pixel", S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
-    }
-    FILE *file = fopen(path, "wb");
+//    if (access("/mnt/sdcard/pixel", 0)) {
+//        mkdir("/mnt/sdcard/pixel", S_IRUSR | S_IWUSR | S_IXUSR | S_IRWXG | S_IRWXO);
+//    }
+//    FILE *file = fopen(path, "wb");
+    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
     long long curTime = getCurrentTime();
     if (downloadPboType == NONE) {
         long long cc = getCurrentTime();
         byte *pixel = new byte[size];
         glReadPixels(0, 0, curPicWidth, curPicHeight, GL_RGBA, GL_UNSIGNED_BYTE, pixel);
-        LOGE("读取耗时 %lld", getCurrentTime() - cc);
+        LOGE("glReadPixels Time %lld", getCurrentTime() - cc);
         cc = getCurrentTime();
 //        fwrite(pixel, size, 1, file);
-//        memcpy(cachePixel, pixel, size);
-        for (int i = 0; i < size; i++) {
-            cachePixel[i] = pixel[i];
-        }
+        memcpy(cachePixel, pixel, size);
         LOGE("内存复制耗时 %lld", getCurrentTime() - cc);
         delete[] pixel;
     } else if (downloadPboType == ONE) {
+
 
     } else if (downloadPboType == TWO) {
         index = (index + 1) % 2;
@@ -329,25 +355,45 @@ void PboRender::readPixels() {
             return;
         }
         glBindBuffer(GL_PIXEL_PACK_BUFFER, downloadPbos[nextIndex]);
-        GLubyte *ptr = (GLubyte *) glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0,
-                                                    mPboSize,
-                                                    GL_MAP_READ_BIT);
+        GLubyte *ptr = static_cast<GLubyte *>(glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0,
+                                                               mPboSize,
+                                                               GL_MAP_READ_BIT));
         glUnmapBuffer(GL_PIXEL_PACK_BUFFER); // release pointer to mapping buffer
-        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
         cc = getCurrentTime();
         if (ptr) {
+//            int status;
+//            JNIEnv *env;
+//            bool isAttached = false;
+//            status = g_jvm->GetEnv((void **) &env, JNI_VERSION_1_6);
+//            if (status < 0) {
+//                g_jvm->AttachCurrentThread(&env, NULL);//将当前线程注册到虚拟机中．
+//                isAttached = true;
+//            }
+//            jobject byteBuffer = env->NewDirectByteBuffer(ptr, size);
+//
+//            jclass clz=env->GetObjectClass(byteBuffer);
+//            jmethodID methodId = env->GetMethodID(clz, "get", "([B)Ljava/nio/ByteBuffer;");
+//            jbyteArray byteArray = env->NewByteArray(size);
+//            env->CallObjectMethod(byteBuffer,methodId,byteArray);
+//
+//
+//            if (isAttached)
+//                g_jvm->DetachCurrentThread();
+
 //            memcpy(cachePixel, ptr, size);
-            for (int i = 0; i < size; i++) {
-                cachePixel[i] = ptr[i];
-            }
+            my_copy(cachePixel,ptr,size);
+
+
         }
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
 //            fwrite(ptr, size, 1, file);
         LOGE("内存复制耗时 %lld", getCurrentTime() - cc);
 
     }
-    fclose(file);
+//    fclose(file);
 
-    LOGE("读取完成耗时%lld", getCurrentTime() - curTime);
+    LOGE("完成耗时%lld", getCurrentTime() - curTime);
 }
 
 

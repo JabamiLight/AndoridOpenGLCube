@@ -19,7 +19,7 @@ private:
     char textureIndex=0;
     GLint textureLocation;
     GLuint * uploadPobs,* downloadPbos;
-    byte* cachePixel= nullptr;
+    byte* cachePixel= NULL;
     int index=-1,nextIndex=0;
     int picCount=10;
     int curPicWidth,curPicHeight;
@@ -27,11 +27,11 @@ private:
     bool initFrame=true;
     bool  readPixInit=true;
 
-    enum PBOTYPE{        NONE,ONE,TWO,THREE
+    enum PBOTYPE{        NONE,ONE,TWO,THREE,FORE
     };
-    PBOTYPE uoloadPboType=NONE;
+    PBOTYPE uoloadPboType=FORE;
     PBOTYPE downloadPboType=TWO;
-    GLuint frame;
+    GLuint frame,readFrame;
     GLuint textureFrame;
 
 public:
@@ -53,6 +53,7 @@ public:
 
     void readPixels();
 
+    int mRowStride;
 };
 
 

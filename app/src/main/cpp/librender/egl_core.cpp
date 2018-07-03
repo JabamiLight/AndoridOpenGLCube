@@ -29,15 +29,15 @@ bool EGLCore::init(EGLContext sharedContext) {
     EGLint minor;//次版本号
     //通过属性去筛选合适的配置
     const EGLint attibutes[] = {
-            EGL_BUFFER_SIZE, 32,
-            EGL_ALPHA_SIZE, 8,
+//            EGL_BUFFER_SIZE, 32,
+            EGL_ALPHA_SIZE, 0,
             EGL_BLUE_SIZE, 8,
             EGL_GREEN_SIZE, 8,
             EGL_RED_SIZE, 8,
             EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR, //opengl es 3
             EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-            EGL_DEPTH_SIZE, 24, //请求深度缓冲区
-            EGL_STENCIL_SIZE,8,
+            EGL_DEPTH_SIZE, 16, //请求深度缓冲区
+            EGL_STENCIL_SIZE,0,
             EGL_NONE
     };
 
@@ -78,7 +78,7 @@ bool EGLCore::init(EGLContext sharedContext) {
 }
 
 EGLSurface EGLCore::createWindowSurface(ANativeWindow *_window) {
-    EGLSurface surface = nullptr;
+    EGLSurface surface = NULL;
     EGLint format;
 
 

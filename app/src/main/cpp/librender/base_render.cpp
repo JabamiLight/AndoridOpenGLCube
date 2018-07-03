@@ -127,7 +127,7 @@ void BaseRender::dealloc() {
     }
     if (assetReader) {
         delete assetReader;
-        assetReader = nullptr;
+        assetReader = NULL;
     }
 
 }

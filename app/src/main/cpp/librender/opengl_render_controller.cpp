@@ -13,7 +13,7 @@ void *OpenGlRenderController::threadStartCallback(void *myself) {
     OpenGlRenderController *controller = (OpenGlRenderController *) myself;
     controller->renderLoop();
 //    pthread_exit(0);
-    return nullptr;
+    return NULL;
 }
 
 void OpenGlRenderController::renderLoop() {
@@ -93,7 +93,7 @@ void OpenGlRenderController::drawFrame() {
 
 void OpenGlRenderController::destroy() {
     LOGI("dealloc renderer ...");
-    if (nullptr != render) {
+    if (NULL != render) {
         render->dealloc();
         delete render;
         render = NULL;
@@ -127,7 +127,7 @@ OpenGlRenderController::~OpenGlRenderController() {
 
 bool OpenGlRenderController::start() {
     LOGI("Creating VideoDutePlayerController thread");
-    pthread_create(&_threadId, nullptr, threadStartCallback, this);
+    pthread_create(&_threadId, NULL, threadStartCallback, this);
     return true;
 }
 
@@ -139,7 +139,7 @@ void OpenGlRenderController::stop() {
     pthread_cond_signal(&mCondition);
     pthread_mutex_unlock(&mLock);
     LOGI("we will join render thread stop");
-    pthread_join(_threadId, nullptr);
+    pthread_join(_threadId, NULL);
     LOGI("VideoDutePlayerController Render thread stopped");
 }
 
@@ -166,8 +166,8 @@ void OpenGlRenderController::resetSize(jint width, jint height, ANativeWindow *p
 OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager
 ) {
     LOGI("VideoDutePlayerController instance created");
-    pthread_mutex_init(&mLock, nullptr);
-    pthread_cond_init(&mCondition, nullptr);
+    pthread_mutex_init(&mLock, NULL);
+    pthread_cond_init(&mCondition, NULL);
     screenWidth = 720;
     screenHeight = 720;
     g_jvm = NULL;
@@ -182,8 +182,8 @@ void OpenGlRenderController::initializeRenderObj() {
 
 OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject assetManager, jobject saber) {
     LOGI("VideoDutePlayerController instance saber");
-    pthread_mutex_init(&mLock, nullptr);
-    pthread_cond_init(&mCondition, nullptr);
+    pthread_mutex_init(&mLock, NULL);
+    pthread_cond_init(&mCondition, NULL);
     screenWidth = 720;
     screenHeight = 720;
     g_jvm = NULL;
@@ -245,8 +245,8 @@ int OpenGlRenderController::fps() {
 OpenGlRenderController::OpenGlRenderController(JNIEnv *env, jobject thiz, jobject assetManager,
                                                jobjectArray bitmapArray) {
     LOGI("VideoDutePlayerController instance saber");
-    pthread_mutex_init(&mLock, nullptr);
-    pthread_cond_init(&mCondition, nullptr);
+    pthread_mutex_init(&mLock, NULL);
+    pthread_cond_init(&mCondition, NULL);
     screenWidth = 720;
     screenHeight = 720;
     g_jvm = NULL;
