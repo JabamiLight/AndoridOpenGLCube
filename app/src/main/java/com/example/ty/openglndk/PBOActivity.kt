@@ -23,7 +23,7 @@ class PBOActivity : AppCompatActivity() {
             }
         }
         val op = BitmapFactory.Options()
-        var a = BitmapFactory.decodeResource(resources, R.mipmap.pic5, op)
+        var a = BitmapFactory.decodeResource(resources, R.mipmap.xiaoren_38, op)
 //        var b = BitmapFactory.decodeResource(resources, R.mipmap.bigpic2, op)
         val bitmapArray = arrayOf<Bitmap>(
                 a

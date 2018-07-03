@@ -9,7 +9,7 @@ void ledRectChar(int,float,float,float,float);
 void showFloat(float);
 void main(){
     vec2 off=vec2(0.05,0.0);
-//     FragColor = texture(texture1,TexCoord);
+     FragColor = texture(texture1,TexCoord);
      vec4 color1 = texture(texture1,TexCoord+off);
      vec4 color2 = texture(texture1,TexCoord-off);
 //     if(color1.r==color2.r&&color1.g==color2.g&&color1.b==color2.b){
@@ -17,7 +17,7 @@ void main(){
 //     }else{
 //          FragColor = vec4(1.0,0.0,0.0,1.0);
 //     }
-          FragColor = vec4(0.0,0.0,0.0,0.0);
+//          FragColor = vec4(0.0,0.0,0.0,0.0);
 
     showFloat(float(-1234));
 

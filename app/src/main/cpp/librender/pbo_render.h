@@ -29,7 +29,7 @@ private:
 
     enum PBOTYPE{        NONE,ONE,TWO,THREE,FORE
     };
-    PBOTYPE uoloadPboType=FORE;
+    PBOTYPE uoloadPboType=NONE;
     PBOTYPE downloadPboType=TWO;
     GLuint frame,readFrame;
     GLuint textureFrame;
