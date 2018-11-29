@@ -113,6 +113,7 @@ void OpenGlRenderController::destroy() {
             isAttached = true;
         }
         env->DeleteGlobalRef(jObj);
+        LOGI("dealloc renderer ...inline");
         if (isAttached)
             g_jvm->DetachCurrentThread();
     }

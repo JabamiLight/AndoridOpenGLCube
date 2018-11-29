@@ -43,9 +43,9 @@ class PBOActivity : AppCompatActivity() {
         })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onBackPressed() {
         controler?.stop()
+        super.onBackPressed()
     }
 
 }

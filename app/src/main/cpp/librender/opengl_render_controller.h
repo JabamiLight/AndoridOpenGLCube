@@ -51,7 +51,7 @@ private:
     EGLSurface previewSurface;
 
     JavaVM *g_jvm;
-    jobject jObj;
+    jobject jObj=NULL;
     // Helper method for starting the thread
     static void* threadStartCallback(void *myself);
     // RenderLoop is called in a rendering thread started in start() method
