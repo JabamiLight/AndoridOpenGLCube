@@ -1,5 +1,5 @@
 # AndoridOpenGLNDK
-基于Android OpenGL ES 3.0 可随手指任意选择的立方体 
+基于Android OpenGL ES 3.0 可随手指任意旋转的立方体 
 
  ![image](https://github.com/TYGitHubPersonal/AndoridOpenGLNDK/blob/master/a.gif )   
  
